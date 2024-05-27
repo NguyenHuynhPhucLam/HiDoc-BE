@@ -1,3 +1,4 @@
+import { raw } from 'body-parser';
 import db from '../models/index';
 
 let getTopDoctorHomeService = (limitInput) => {
@@ -81,8 +82,49 @@ let saveInfoDoctorService = (inputData) => {
     }
   });
 };
+
+let getDoctorDetailByIdService = (inputId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!inputId) {
+        resolve({
+          errCode: 1,
+          errMessage: 'Cannot get doctor by Id: Missing doctocId',
+        });
+      } else {
+        let data = await db.User.findOne({
+          where: { id: inputId },
+          attributes: {
+            exclude: ['password', 'image'],
+          },
+          include: [
+            {
+              model: db.Markdown,
+              attributes: ['description', 'contentHTML', 'contentMarkdown'],
+            },
+            {
+              model: db.Allcode,
+              as: 'positionData',
+              attributes: ['valueEn', 'valueVi'],
+            },
+          ],
+          raw: true,
+          nest: true,
+        });
+
+        resolve({
+          errCode: 0,
+          data: data,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   getTopDoctorHomeService: getTopDoctorHomeService,
   getAllDoctorsService: getAllDoctorsService,
   saveInfoDoctorService: saveInfoDoctorService,
+  getDoctorDetailByIdService: getDoctorDetailByIdService,
 };
