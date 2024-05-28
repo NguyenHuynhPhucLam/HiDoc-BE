@@ -1,5 +1,8 @@
-import { raw } from 'body-parser';
+import _ from 'lodash';
 import db from '../models/index';
+require('dotenv').config();
+
+const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 
 let getTopDoctorHomeService = (limitInput) => {
   return new Promise(async (resolve, reject) => {
@@ -143,9 +146,63 @@ let getDoctorDetailByIdService = (inputId) => {
     }
   });
 };
+
+let bulkCreateScheduleService = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.arrSchedule || !data.doctorId || !data.formattedDate) {
+        resolve({
+          errCode: 1,
+          errMessage: 'Missing require parameters',
+        });
+      } else {
+        let schedules = data.arrSchedule;
+        if (schedules && schedules.length > 0) {
+          schedules = schedules.map((item) => {
+            item.maxNumber = MAX_NUMBER_SCHEDULE;
+            return item;
+          });
+        }
+
+        // Get all existing data
+        let existing = await db.Schedule.findAll({
+          where: { doctorId: data.doctorId, date: data.formattedDate },
+          attributes: ['timeType', 'date', 'doctorId', 'maxNumber'],
+          raw: true,
+        });
+
+        // Convert date
+        if (existing && existing.length > 0) {
+          existing = existing.map((item) => {
+            item.date = new Date(item.date).getTime();
+            return item;
+          });
+        }
+
+        // Compare different
+        let toCreate = _.differenceWith(schedules, existing, (a, b) => {
+          return a.timeType === b.timeType && a.date === b.date;
+        });
+
+        // Create data
+        if (toCreate && toCreate.length > 0) {
+          await db.Schedule.bulkCreate(toCreate);
+        }
+
+        resolve({
+          errCode: 0,
+          errMessage: 'OK',
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   getTopDoctorHomeService: getTopDoctorHomeService,
   getAllDoctorsService: getAllDoctorsService,
   saveInfoDoctorService: saveInfoDoctorService,
   getDoctorDetailByIdService: getDoctorDetailByIdService,
+  bulkCreateScheduleService: bulkCreateScheduleService,
 };
