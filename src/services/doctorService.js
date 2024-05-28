@@ -101,7 +101,6 @@ let saveInfoDoctorService = (inputData) => {
     }
   });
 };
-
 let getDoctorDetailByIdService = (inputId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -146,14 +145,13 @@ let getDoctorDetailByIdService = (inputId) => {
     }
   });
 };
-
 let bulkCreateScheduleService = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.arrSchedule || !data.doctorId || !data.formattedDate) {
         resolve({
           errCode: 1,
-          errMessage: 'Missing require parameters',
+          errMessage: 'Missing required parameters',
         });
       } else {
         let schedules = data.arrSchedule;
@@ -171,17 +169,9 @@ let bulkCreateScheduleService = (data) => {
           raw: true,
         });
 
-        // Convert date
-        if (existing && existing.length > 0) {
-          existing = existing.map((item) => {
-            item.date = new Date(item.date).getTime();
-            return item;
-          });
-        }
-
         // Compare different
         let toCreate = _.differenceWith(schedules, existing, (a, b) => {
-          return a.timeType === b.timeType && a.date === b.date;
+          return a.timeType === b.timeType && +a.date === +b.date;
         });
 
         // Create data
@@ -199,10 +189,47 @@ let bulkCreateScheduleService = (data) => {
     }
   });
 };
+let getScheduleByDateService = (doctorId, date) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!doctorId || !date) {
+        resolve({
+          errCode: 1,
+          errMessage: 'Missing required parameters',
+        });
+      } else {
+        let dataSchedule = await db.Schedule.findAll({
+          where: {
+            doctorId: doctorId,
+            date: date,
+          },
+          include: [
+            {
+              model: db.Allcode,
+              as: 'timeTypeData',
+              attributes: ['valueEn', 'valueVi'],
+            },
+          ],
+          raw: false,
+          nest: true,
+        });
+
+        if (!dataSchedule) dataSchedule = [];
+        resolve({
+          errCode: 0,
+          data: dataSchedule,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   getTopDoctorHomeService: getTopDoctorHomeService,
   getAllDoctorsService: getAllDoctorsService,
   saveInfoDoctorService: saveInfoDoctorService,
   getDoctorDetailByIdService: getDoctorDetailByIdService,
   bulkCreateScheduleService: bulkCreateScheduleService,
+  getScheduleByDateService: getScheduleByDateService,
 };
