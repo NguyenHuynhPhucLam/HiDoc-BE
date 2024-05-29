@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { includes, reject } from 'lodash';
 import db from '../models/index';
 import { where } from 'sequelize';
 require('dotenv').config();
@@ -163,6 +163,29 @@ let getDoctorDetailByIdService = (inputId) => {
               as: 'positionData',
               attributes: ['valueEn', 'valueVi'],
             },
+            {
+              model: db.Doctor_Info,
+              attributes: {
+                exclude: ['id', 'doctorId'],
+              },
+              include: [
+                {
+                  model: db.Allcode,
+                  as: 'priceTypeData',
+                  attributes: ['valueEn', 'valueVi'],
+                },
+                {
+                  model: db.Allcode,
+                  as: 'provinceTypeData',
+                  attributes: ['valueEn', 'valueVi'],
+                },
+                {
+                  model: db.Allcode,
+                  as: 'paymentTypeData',
+                  attributes: ['valueEn', 'valueVi'],
+                },
+              ],
+            },
           ],
           raw: false,
           nest: true,
@@ -263,6 +286,54 @@ let getScheduleByDateService = (doctorId, date) => {
     }
   });
 };
+let getExtraInfoDoctorByIdService = (inputId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!inputId) {
+        resolve({
+          errCode: 1,
+          errMessage: 'Cannot get doctor by Id: Missing doctocId',
+        });
+      } else {
+        let data = await db.Doctor_Info.findOne({
+          where: {
+            doctorId: inputId,
+          },
+          attributes: {
+            exclude: ['id', 'doctorId'],
+          },
+          include: [
+            {
+              model: db.Allcode,
+              as: 'priceTypeData',
+              attributes: ['valueEn', 'valueVi'],
+            },
+            {
+              model: db.Allcode,
+              as: 'provinceTypeData',
+              attributes: ['valueEn', 'valueVi'],
+            },
+            {
+              model: db.Allcode,
+              as: 'paymentTypeData',
+              attributes: ['valueEn', 'valueVi'],
+            },
+          ],
+          raw: false,
+          nest: true,
+        });
+
+        if (!data) data = {};
+        resolve({
+          errCode: 0,
+          data: data,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   getTopDoctorHomeService: getTopDoctorHomeService,
   getAllDoctorsService: getAllDoctorsService,
@@ -270,4 +341,5 @@ module.exports = {
   getDoctorDetailByIdService: getDoctorDetailByIdService,
   bulkCreateScheduleService: bulkCreateScheduleService,
   getScheduleByDateService: getScheduleByDateService,
+  getExtraInfoDoctorByIdService: getExtraInfoDoctorByIdService,
 };
