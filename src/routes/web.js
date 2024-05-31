@@ -4,6 +4,7 @@ import userController from '../controllers/userController';
 import doctorController from '../controllers/doctorController';
 import patientController from '../controllers/patientController';
 import specialtyController from '../controllers/specialtyController';
+import medicineController from '../controllers/medicineController';
 
 let router = express.Router();
 
@@ -69,6 +70,7 @@ let initWebRoutes = (app) => {
     '/api/get-detail-specialty-by-id',
     specialtyController.getDetailSpecialtyById
   );
+  router.post('/api/save-info-doctor', medicineController.postSaveMedicine);
 
   return app.use('/', router);
 };
