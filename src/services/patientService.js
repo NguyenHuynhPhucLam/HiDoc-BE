@@ -113,7 +113,28 @@ let postVerifyBookAppointmentService = (data) => {
   });
 };
 
+let getPatientById = (inputId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let data = await db.User.findOne({
+        where: { id: inputId, roleId: 'R3' },
+        attributes: ['firstName'],
+      });
+
+      if (!data) data = {};
+
+      resolve({
+        errCode: 0,
+        errMessage: 'OK',
+        data: data,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   postBookAppointmentService: postBookAppointmentService,
   postVerifyBookAppointmentService: postVerifyBookAppointmentService,
+  getPatientById: getPatientById,
 };

@@ -70,7 +70,17 @@ let initWebRoutes = (app) => {
     '/api/get-detail-specialty-by-id',
     specialtyController.getDetailSpecialtyById
   );
-  router.post('/api/save-info-doctor', medicineController.postSaveMedicine);
+  router.post('/api/save-info-medicine', medicineController.postSaveMedicine);
+  router.get('/api/get-patient-by-id', patientController.getPatientById);
+  router.get('/api/get-all-medicines', medicineController.getAllMedicine);
+  router.post(
+    '/api/create-medical-report',
+    medicineController.postSaveMedicalReport
+  );
+  router.get(
+    '/api/get-all-medicines-of-patient-by-id',
+    medicineController.getAllMedicinesOfPatientById
+  );
 
   return app.use('/', router);
 };
