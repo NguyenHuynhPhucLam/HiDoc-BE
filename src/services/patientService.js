@@ -7,6 +7,10 @@ let buildUrlEmail = (doctorId, token) => {
   let result = `${process.env.URL_REACT}/verify-booking?token=${token}&doctorId=${doctorId}`;
   return result;
 };
+let builBillLink = (doctorId, token) => {
+  let result = `${process.env.URL_REACT}/verify-bill-booking?token=${token}&doctorId=${doctorId}`;
+  return result;
+};
 
 let postBookAppointmentService = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -118,7 +122,7 @@ let getPatientById = (inputId) => {
     try {
       let data = await db.User.findOne({
         where: { id: inputId, roleId: 'R3' },
-        attributes: ['firstName'],
+        attributes: ['firstName', 'email'],
       });
 
       if (!data) data = {};
@@ -133,8 +137,115 @@ let getPatientById = (inputId) => {
     }
   });
 };
+let postBill = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (
+        !data.appointmentDate ||
+        !data.patientName ||
+        !data.plusPrice ||
+        !data.totalPrice ||
+        !data.doctorPrice ||
+        !data.receiverEmail ||
+        !data.doctorId ||
+        !data.patientId ||
+        !data.unixDate
+      ) {
+        resolve({
+          errCode: 1,
+          errMessage: 'Missing parameter',
+        });
+      } else {
+        let token = uuidv4();
+        await emailService.sendBillEmail({
+          receiverEmail: data.receiverEmail,
+          patientName: data.patientName,
+          appointmentDate: data.appointmentDate,
+          doctorPrice: data.doctorPrice,
+          totalPrice: data.totalPrice,
+          plusPrice: data.plusPrice,
+          redirectLink: builBillLink(data.doctorId, token),
+        });
+
+        // Create a bill record
+        await db.Bill.findOrCreate({
+          where: { patientId: data.patientId },
+          defaults: {
+            patientId: data.patientId,
+            patientName: data.patientName,
+            plusPrice: data.plusPrice,
+            totalPrice: data.totalPrice,
+            doctorPrice: data.doctorPrice,
+            appointmentDate: data.unixDate,
+            token: token,
+          },
+        });
+        // Update a booking record
+        let booking = await db.Booking.findOne({
+          where: { patientId: data.patientId, statusId: 'S2' },
+          raw: false,
+        });
+
+        if (booking) {
+          booking.token = token;
+          await booking.save();
+          resolve({
+            errCode: 0,
+            errMessage: 'Post bill success',
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: 'Bill has been confirmed or does not exist',
+          });
+        }
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+let postVerifyBill = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.token || !data.doctorId) {
+        resolve({
+          errCode: 1,
+          errMessage: 'Missing parameter',
+        });
+      } else {
+        let appointment = await db.Booking.findOne({
+          where: {
+            doctorId: data.doctorId,
+            token: data.token,
+            statusId: 'S2',
+          },
+          raw: false,
+        });
+
+        if (appointment) {
+          await appointment.destroy();
+          resolve({
+            errCode: 0,
+            errMessage: 'The user has confirmed bill',
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: 'Bill has been confirmed or does not exist',
+          });
+        }
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   postBookAppointmentService: postBookAppointmentService,
   postVerifyBookAppointmentService: postVerifyBookAppointmentService,
   getPatientById: getPatientById,
+  postBill: postBill,
+  postVerifyBill: postVerifyBill,
 };

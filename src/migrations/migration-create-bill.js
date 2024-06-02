@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('patient_info', {
+    await queryInterface.createTable('bills', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,14 +12,23 @@ module.exports = {
       patientId: {
         type: Sequelize.INTEGER,
       },
-      name: {
+      patientName: {
         type: Sequelize.STRING,
       },
-      symptom: {
-        type: Sequelize.TEXT,
+      plusPrice: {
+        type: Sequelize.STRING,
       },
-      diagnose: {
-        type: Sequelize.TEXT,
+      totalPrice: {
+        type: Sequelize.STRING,
+      },
+      doctorPrice: {
+        type: Sequelize.STRING,
+      },
+      appointmentDate: {
+        type: Sequelize.STRING,
+      },
+      token: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
@@ -32,6 +41,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('patient_info');
+    await queryInterface.dropTable('bills');
   },
 };

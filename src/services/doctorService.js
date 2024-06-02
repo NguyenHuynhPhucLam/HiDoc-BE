@@ -488,6 +488,76 @@ let getListPatientForDoctor = (doctorId, date) => {
     }
   });
 };
+
+let postSavePatientInfo = (inputData) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!inputData.patientId || !inputData.symptom || !inputData.diagnose) {
+        resolve({
+          errCode: 1,
+          errMessage: `Missing parameter`,
+        });
+      } else {
+        let data = await db.Patient_Info.findOrCreate({
+          where: { patientId: inputData.patientId },
+          defaults: {
+            patientId: inputData.patientId,
+            name: 'Patient',
+            symptom: inputData.symptom,
+            diagnose: inputData.diagnose,
+          },
+        });
+        resolve({
+          data: data,
+          errCode: 0,
+          errMessage: 'Save doctor information successfully',
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+let getPatientInfoByPId = (inputId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let data = await db.Patient_Info.findOne({
+        where: { patientId: inputId },
+        attributes: ['symptom', 'diagnose'],
+      });
+
+      if (!data) data = {};
+
+      resolve({
+        errCode: 0,
+        errMessage: 'OK',
+        data: data,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+let deleteMedicalReportByPatientId = async (userId, medicineId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let user = await db.Medical_Report.findOne({
+        where: { patientId: userId, medicineId: medicineId },
+        raw: false,
+      });
+      if (user) {
+        await user.destroy();
+      }
+      resolve({
+        errCode: 0,
+        errMessage: 'OK',
+      });
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 module.exports = {
   getTopDoctorHomeService: getTopDoctorHomeService,
   getAllDoctorsService: getAllDoctorsService,
@@ -498,4 +568,7 @@ module.exports = {
   getExtraInfoDoctorByIdService: getExtraInfoDoctorByIdService,
   getProfileDoctorByIdService: getProfileDoctorByIdService,
   getListPatientForDoctor: getListPatientForDoctor,
+  postSavePatientInfo: postSavePatientInfo,
+  getPatientInfoByPId: getPatientInfoByPId,
+  deleteMedicalReportByPatientId: deleteMedicalReportByPatientId,
 };

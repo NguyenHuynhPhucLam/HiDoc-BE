@@ -31,7 +31,11 @@ let postSaveMedicine = (input) => {
 let getAllMedicine = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      let data = await db.Medicine.findAll();
+      let data = await db.Medicine.findAll({
+        attributes: {
+          exclude: ['createdAt', 'updatedAt'],
+        },
+      });
       if (data && data.length > 0) {
       }
       resolve({

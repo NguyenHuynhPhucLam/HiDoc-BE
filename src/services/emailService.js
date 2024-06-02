@@ -59,6 +59,49 @@ let getBodyHTMLEmail = (dataSend) => {
   return result;
 };
 
+let sendBillEmail = async (dataSend) => {
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // Use `true` for port 465, `false` for all other ports
+    auth: {
+      user: process.env.EMAIL_APP,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  });
+  // send mail with defined transport object
+  const info = await transporter.sendMail({
+    from: `"HiDoc's Administrator" <nguyenphuclam105@gmail.com>`, // sender address
+    to: dataSend.receiverEmail, // list of receivers
+    subject: 'Thông tin hóa đơn', // Subject line
+    html: getBillBodyHTMLEmail(dataSend), // html body
+  });
+};
+
+let getBillBodyHTMLEmail = (dataSend) => {
+  let result = '';
+  result = `
+    <h3>Xin chào ${dataSend.patientName}!</h3>
+    <p>Bạn nhận được email này vì đã khám bệnh thành công ở HiDoc </p>
+    <p>Thông tin hóa đơn:</p>
+    <div><b>Thời gian khám bệnh: ${dataSend.appointmentDate}</b></div>
+    <div><b>Giá khám: ${dataSend.doctorPrice}</b></div>
+    <div><b>Giá thuốc: ${dataSend.totalPrice}</b></div>
+    <div><b>Tổng tiền: ${dataSend.doctorPrice}</b></div>
+
+    <div>
+         Nếu bạn đã xác nhận tất cả các thông tin trên, vui lòng click vào đường link bên dưới
+         để hoàn tất thủ tục xác nhận hóa đơn khám bệnh.
+    </div>
+    <div>
+        <a href=${dataSend.redirectLink} target="_blank">Click here</a>
+    </div>
+    <div>Cảm ơn bạn đã tin tưởng sử dụng dịch vụ của chúng tôi !</div>
+    `;
+
+  return result;
+};
 module.exports = {
   sendSimpleEmail: sendSimpleEmail,
+  sendBillEmail: sendBillEmail,
 };

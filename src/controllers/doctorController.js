@@ -124,6 +124,51 @@ let getListPatientForDoctor = async (req, res) => {
     });
   }
 };
+
+let postSavePatientInfo = async (req, res) => {
+  try {
+    let data = req.body;
+    let response = await doctorService.postSavePatientInfo(data);
+    return res.status(200).json(response);
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: 'Error from server ...',
+    });
+  }
+};
+
+let getPatientInfoByPId = async (req, res) => {
+  try {
+    let patientId = req.query.patientId;
+    let info = await doctorService.getPatientInfoByPId(patientId);
+    return res.status(200).json(info);
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: 'Error from server ...',
+    });
+  }
+};
+let deleteMedicalReportByPatientId = async (req, res) => {
+  let userId = await req.query.patientId;
+  let medicineId = await req.query.medicineId;
+  if (userId && medicineId) {
+    let info = await doctorService.deleteMedicalReportByPatientId(
+      userId,
+      medicineId
+    );
+    return res.status(200).json(info);
+  } else {
+    console.log(e);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: 'Error from server ...',
+    });
+  }
+};
 module.exports = {
   getTopDoctorHome: getTopDoctorHome,
   getAllDoctors: getAllDoctors,
@@ -134,4 +179,7 @@ module.exports = {
   getExtraInfoDoctorById: getExtraInfoDoctorById,
   getProfileDoctorById: getProfileDoctorById,
   getListPatientForDoctor: getListPatientForDoctor,
+  postSavePatientInfo: postSavePatientInfo,
+  getPatientInfoByPId: getPatientInfoByPId,
+  deleteMedicalReportByPatientId: deleteMedicalReportByPatientId,
 };

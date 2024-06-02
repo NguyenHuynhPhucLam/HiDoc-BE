@@ -81,6 +81,17 @@ let initWebRoutes = (app) => {
     '/api/get-all-medicines-of-patient-by-id',
     medicineController.getAllMedicinesOfPatientById
   );
+  router.post('/api/save-patient-info', doctorController.postSavePatientInfo);
+  router.get(
+    '/api/get-patient-info-by-pid',
+    doctorController.getPatientInfoByPId
+  );
+  router.post('/api/post-bill', patientController.postBill);
+  router.post('/api/verify-bill', patientController.postVerifyBill);
+  router.delete(
+    '/api/delete-medical-report-by-patient-id',
+    doctorController.deleteMedicalReportByPatientId
+  );
 
   return app.use('/', router);
 };
