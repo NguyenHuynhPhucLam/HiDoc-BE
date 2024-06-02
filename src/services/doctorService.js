@@ -552,7 +552,25 @@ let deleteMedicalReportByPatientId = async (userId, medicineId) => {
         errCode: 0,
         errMessage: 'OK',
       });
-      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let deleteBookingByPatientId = async (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let booking = await db.Booking.findOne({
+        where: { patientId: userId },
+        raw: false,
+      });
+      if (booking) {
+        await booking.destroy();
+      }
+      resolve({
+        errCode: 0,
+        errMessage: 'OK',
+      });
     } catch (error) {
       reject(error);
     }
@@ -571,4 +589,5 @@ module.exports = {
   postSavePatientInfo: postSavePatientInfo,
   getPatientInfoByPId: getPatientInfoByPId,
   deleteMedicalReportByPatientId: deleteMedicalReportByPatientId,
+  deleteBookingByPatientId: deleteBookingByPatientId,
 };

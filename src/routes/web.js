@@ -92,6 +92,10 @@ let initWebRoutes = (app) => {
     '/api/delete-medical-report-by-patient-id',
     doctorController.deleteMedicalReportByPatientId
   );
+  router.delete(
+    '/api/delete-booking-by-patient-id',
+    doctorController.deleteBookingByPatientId
+  );
 
   return app.use('/', router);
 };
