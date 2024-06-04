@@ -1,13 +1,7 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-// // Option 3: Passing parameters separately (other dialects)
-// const sequelize = new Sequelize('phuclam', 'root', null, {
-//   host: 'localhost',
-//   dialect: 'mysql',
-//   logging: false, //Hide Query when connect to db (You also need to add this line to config.json file)
-// });
-
+// Option 2: Passing parameters separately (other dialects)
 const sequelize = new Sequelize(
   process.env.DB_DATABASE_NAME,
   process.env.DB_USERNAME,
@@ -15,9 +9,20 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: process.env.DB_DIALECT,
+    dialect: 'postgres',
     logging: false,
-    query: { raw: true },
+    dialectOptions:
+      process.env.DB_SSL === 'true'
+        ? {
+            ssl: {
+              require: true,
+              rejectUnauthorized: false,
+            },
+          }
+        : {},
+    query: {
+      raw: true,
+    },
     timezone: '+07:00',
   }
 );
@@ -25,10 +30,9 @@ const sequelize = new Sequelize(
 let connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log('Connection has been established successfully');
+    console.log('Connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }
 };
-
 module.exports = connectDB;
