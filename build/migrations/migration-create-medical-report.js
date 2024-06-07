@@ -12,7 +12,7 @@ module.exports = {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return queryInterface.createTable('medical_report', {
+            return queryInterface.createTable('Medical_Report', {
               id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -50,7 +50,7 @@ module.exports = {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return queryInterface.dropTable('medical_report');
+            return queryInterface.dropTable('Medical_Report');
           case 2:
           case "end":
             return _context2.stop();

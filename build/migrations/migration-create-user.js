@@ -41,12 +41,15 @@ module.exports = {
                 type: Sequelize.STRING
               },
               image: {
-                type: Sequelize.STRING
+                type: Sequelize.BLOB
               },
               roleId: {
                 type: Sequelize.STRING
               },
               positionId: {
+                type: Sequelize.STRING
+              },
+              birthday: {
                 type: Sequelize.STRING
               },
               createdAt: {
