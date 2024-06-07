@@ -10,10 +10,10 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       currentNumber: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
       maxNumber: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
       date: {
         type: Sequelize.STRING,
@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       doctorId: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
