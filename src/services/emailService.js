@@ -87,7 +87,7 @@ let getBillBodyHTMLEmail = (dataSend) => {
     <div><b>Thời gian khám bệnh: ${dataSend.appointmentDate}</b></div>
     <div><b>Giá khám: ${dataSend.doctorPrice}</b></div>
     <div><b>Giá thuốc: ${dataSend.totalPrice}</b></div>
-    <div><b>Tổng tiền: ${dataSend.doctorPrice}</b></div>
+    <div><b>Tổng tiền: ${dataSend.plusPrice}</b></div>
 
     <div>
          Nếu bạn đã xác nhận tất cả các thông tin trên, vui lòng click vào đường link bên dưới

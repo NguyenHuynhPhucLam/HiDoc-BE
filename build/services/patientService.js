@@ -216,7 +216,7 @@ var getPatientById = function getPatientById(inputId) {
 var postBill = function postBill(data) {
   return new Promise( /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(resolve, reject) {
-      var token, plusPrice, booking;
+      var token, booking;
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
@@ -229,23 +229,22 @@ var postBill = function postBill(data) {
               errCode: 1,
               errMessage: 'Missing parameter'
             });
-            _context4.next = 22;
+            _context4.next = 21;
             break;
           case 5:
             token = (0, _uuid.v4)();
-            plusPrice = parseInt(data.doctorPrice) + parseInt(data.totalPrice);
-            _context4.next = 9;
+            _context4.next = 8;
             return _emailService["default"].sendBillEmail({
               receiverEmail: data.receiverEmail,
               patientName: data.patientName,
               appointmentDate: data.appointmentDate,
               doctorPrice: data.doctorPrice,
               totalPrice: data.totalPrice,
-              plusPrice: plusPrice,
+              plusPrice: parseInt(data.doctorPrice) + parseInt(data.totalPrice),
               redirectLink: builBillLink(data.doctorId, token)
             });
-          case 9:
-            _context4.next = 11;
+          case 8:
+            _context4.next = 10;
             return _models["default"].Bill.findOrCreate({
               where: {
                 patientId: data.patientId
@@ -253,15 +252,15 @@ var postBill = function postBill(data) {
               defaults: {
                 patientId: data.patientId,
                 patientName: data.patientName,
-                plusPrice: plusPrice,
+                plusPrice: parseInt(data.doctorPrice) + parseInt(data.totalPrice),
                 totalPrice: data.totalPrice,
                 doctorPrice: data.doctorPrice,
                 appointmentDate: data.unixDate,
                 token: token
               }
             });
-          case 11:
-            _context4.next = 13;
+          case 10:
+            _context4.next = 12;
             return _models["default"].Booking.findOne({
               where: {
                 patientId: data.patientId,
@@ -269,39 +268,39 @@ var postBill = function postBill(data) {
               },
               raw: false
             });
-          case 13:
+          case 12:
             booking = _context4.sent;
             if (!booking) {
-              _context4.next = 21;
+              _context4.next = 20;
               break;
             }
             booking.token = token;
-            _context4.next = 18;
+            _context4.next = 17;
             return booking.save();
-          case 18:
+          case 17:
             resolve({
               errCode: 0,
               errMessage: 'Post bill success'
             });
-            _context4.next = 22;
+            _context4.next = 21;
             break;
-          case 21:
+          case 20:
             resolve({
               errCode: 2,
               errMessage: 'Bill has been confirmed or does not exist'
             });
-          case 22:
-            _context4.next = 27;
+          case 21:
+            _context4.next = 26;
             break;
-          case 24:
-            _context4.prev = 24;
+          case 23:
+            _context4.prev = 23;
             _context4.t0 = _context4["catch"](0);
             reject(_context4.t0);
-          case 27:
+          case 26:
           case "end":
             return _context4.stop();
         }
-      }, _callee4, null, [[0, 24]]);
+      }, _callee4, null, [[0, 23]]);
     }));
     return function (_x7, _x8) {
       return _ref4.apply(this, arguments);

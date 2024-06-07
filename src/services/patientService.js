@@ -157,14 +157,13 @@ let postBill = (data) => {
         });
       } else {
         let token = uuidv4();
-        let plusPrice = parseInt(data.doctorPrice) + parseInt(data.totalPrice);
         await emailService.sendBillEmail({
           receiverEmail: data.receiverEmail,
           patientName: data.patientName,
           appointmentDate: data.appointmentDate,
           doctorPrice: data.doctorPrice,
           totalPrice: data.totalPrice,
-          plusPrice: plusPrice,
+          plusPrice: parseInt(data.doctorPrice) + parseInt(data.totalPrice),
           redirectLink: builBillLink(data.doctorId, token),
         });
 
@@ -174,7 +173,7 @@ let postBill = (data) => {
           defaults: {
             patientId: data.patientId,
             patientName: data.patientName,
-            plusPrice: plusPrice,
+            plusPrice: parseInt(data.doctorPrice) + parseInt(data.totalPrice),
             totalPrice: data.totalPrice,
             doctorPrice: data.doctorPrice,
             appointmentDate: data.unixDate,
