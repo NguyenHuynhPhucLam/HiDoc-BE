@@ -10,13 +10,13 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       patientId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       medicineId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       amount: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

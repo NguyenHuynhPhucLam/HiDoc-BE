@@ -13,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   Medical_Report.init(
     {
-      patientId: DataTypes.INTEGER,
-      medicineId: DataTypes.INTEGER,
-      amount: DataTypes.INTEGER,
+      patientId: DataTypes.STRING,
+      medicineId: DataTypes.STRING,
+      amount: DataTypes.STRING,
     },
     {
       sequelize,
