@@ -15,6 +15,7 @@ let builBillLink = (doctorId, token) => {
 let postBookAppointmentService = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const startTime = Date.now();
       if (
         !data.email ||
         !data.doctorId ||
@@ -68,6 +69,9 @@ let postBookAppointmentService = (data) => {
             },
           });
         }
+        const endTime = Date.now();
+        const processingTime = (endTime - startTime) / 1000; // Chuyển đổi thành giây
+        console.log('Thời gian xử lý: ', processingTime, ' giây');
         resolve({
           errCode: 0,
           errMessage: 'Save or create an appointment successfully!',
